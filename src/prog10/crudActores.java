@@ -18,7 +18,7 @@ import java.util.InputMismatchException;
  *
  * @author zero
  */
-public class PROG10 {
+public class crudActores {
 
     /**
      * @param args the command line arguments
@@ -28,24 +28,42 @@ public class PROG10 {
     
     
     
+     static Connection connection() throws ClassNotFoundException, SQLException{
+                // Seteamos la conexion con la DB
+                Class.forName("oracle.jdbc.OracleDriver");
+
+                            // Parametros de conexion
+                            String dbURL = "jdbc:oracle:thin:@localhost:49161:xe";
+                            String user  = "system";
+                            String pass  = "oracle";
+
+                            // Objeto de conexion
+                            Connection conn = null;
+                            
+                            // Socket de Conexion para BD
+                            conn = DriverManager.getConnection(dbURL, user, pass);
+                           
+     
+                            return conn;
+     
+     }
+     
      private static void mostrarMenu() {
 
         
         boolean enabledmostrarMenu = true;
         
-        String busqueda = null;
-       
-        while (enabledmostrarMenu == true) { 
+        while (enabledmostrarMenu) { 
         System.out.println("Menu Actores:");
         System.out.println("\n");
         System.out.println("Selecciona una opcion.");
-        System.out.println("          Opcion 1 Añadir actor :");
-        System.out.println("          Opcion 2 Listar actores:");
-        System.out.println("          Opcion 3 Borrar actor  por codigo:");
-        System.out.println("          Opcion 4 Editar actor por codigo:");
+        System.out.println("          Opcion 1 Añadir actor");
+        System.out.println("          Opcion 2 Listar actores");
+        System.out.println("          Opcion 3 Borrar actor  por codigo");
+        System.out.println("          Opcion 4 Editar actor por codigo");
         System.out.println("          Opcion 5 Salir.");
             try {
-                    System.out.print("Introduzca su opcion[1-5][5 Salir]: ");
+                    System.out.print("Introduzca su opcion[1-4][5 Salir]: ");
 
                     int opt = Integer.parseInt(dato.readLine());
                     
@@ -93,36 +111,22 @@ public class PROG10 {
      
      static void editActor() throws IOException, ClassNotFoundException, SQLException
      {
-                // Registramos el driver
-                Class.forName("oracle.jdbc.OracleDriver");
-
-                            // Parametros de conexion
-                            String dbURL = "jdbc:oracle:thin:@localhost:49161:xe";
-                            String user  = "system";
-                            String pass  = "oracle";
-
-                            // Objeto de conexion
-                            Connection conn = null;
-                            
-                            // Socket de Conexion para BD
-                            conn = DriverManager.getConnection(dbURL, user, pass);
-
-                            // Costruimos el objeto con las preguntas como valores a los atributos y lo añadimos a la lista
-                            Statement stmt = conn.createStatement();
-
-
-         System.out.println("Introduzca el codigo del actor que desea editar");
+            // Traemos el socket de conexion y creamos la declaracion para hacer consultas
+            Connection conn = connection();
+            Statement stmt = conn.createStatement();
             
-            
+            listActors();
+            System.out.println("");
+            System.out.println("Introduzca el codigo del actor que desea editar");
             int ni= Integer.parseInt(dato.readLine());
             
-                ResultSet rset = stmt.executeQuery("SELECT * FROM APEX_040000.ACTORES WHERE CODIGO_ACTOR = "+ni+"");
+            ResultSet rset = stmt.executeQuery("SELECT * FROM APEX_040000.ACTORES WHERE CODIGO_ACTOR = "+ni+"");
                             
-              System.out.println(" --- Editar Actor  --- "+ ni);
+            System.out.println(" --- Editar Actor  --- "+ ni);
              
                 while (rset.next()){
 
-                    System.out.print("Añade el nombre --> ");
+                    System.out.print("Añade el nuevo nombre --> Valor actual:"+ rset.getString(1)+"-->");
 
                     String nombre = dato.readLine();    
                             
@@ -133,7 +137,7 @@ public class PROG10 {
                     
                     System.out.println("");
 
-                    System.out.print("Añade el Apellido --> ");
+                    System.out.print("Añade el nuevo Apellido --> Valor actual: "+ rset.getString(2)+"-->");
 
                     String apellido = dato.readLine();
                     
@@ -145,7 +149,7 @@ public class PROG10 {
                     
                     System.out.println("");
                     
-                    System.out.print("Añade la fecha de nacimiento --> ");
+                    System.out.print("Añade la nueva fecha de nacimiento --> Valor actual: "+rset.getString(3)+"-->");
 
                     String fechaNacimiento = dato.readLine();
                     
@@ -156,7 +160,7 @@ public class PROG10 {
                     System.out.println("");
 
                     
-                    System.out.print("Añade los premios --> ");
+                    System.out.print("Añade los nuevos premios --> Valor actual: "+rset.getString(4)+"-->");
 
                     String premio = dato.readLine();
                     
@@ -166,24 +170,19 @@ public class PROG10 {
                     
                     System.out.println("");
                     
-                    System.out.print("Añade el salario --> ");
+                    System.out.print("Añade el nuevo salario --> Valor actual: "+rset.getString(5)+"-->");
                     
                     String salario = dato.readLine();
                     
-                    if (salario.equals(null)){
+                    if (salario == null){
                         salario = rset.getString(5);
                     }
                     
                     
                     
                     System.out.println("");
-                      
-                 
-                      
-                 
-
-                            // Resulset guarda el resultado de la consulta a la tabla de BD
-                            String query =  "UPDATE APEX_040000.ACTORES set nombre='"+nombre +"', apellido='"+apellido +"', f_nacimiento='"+fechaNacimiento +"', premios='"+premio +"'"
+                        // Preparamos la consulta
+                        String query =  "UPDATE APEX_040000.ACTORES set nombre='"+nombre +"', apellido='"+apellido +"', f_nacimiento='"+fechaNacimiento +"', premios='"+premio +"'"
                                     + ", salario='"+salario +"' where codigo_actor='"+ rset.getString(6) +"'";
 
                         rset = stmt.executeQuery(query);
@@ -200,25 +199,10 @@ public class PROG10 {
      
     static void listActors() throws SQLException, ClassNotFoundException
     {
-    
-       
+                // Traemos el socket de conexion y creamos la declaracion para hacer consultas
+                Connection conn = connection();
+                Statement stmt = conn.createStatement();
 
-                            // Registramos el driver
-                            Class.forName("oracle.jdbc.OracleDriver");
-
-                            // Parametros de conexion
-                            String dbURL = "jdbc:oracle:thin:@localhost:49161:xe";
-                            String user  = "system";
-                            String pass  = "oracle";
-
-                            // Objeto de conexion
-                            Connection conn = null;
-
-                            // Socket de Conexion para BD
-                            conn = DriverManager.getConnection(dbURL, user, pass);
-
-                            // Costruimos el objeto con las preguntas como valores a los atributos y lo añadimos a la lista
-                            Statement stmt = conn.createStatement();
 
                             // Resulset guarda el resultado de la consulta a la tabla de BD
                       
@@ -246,17 +230,9 @@ public class PROG10 {
     static void deleteActor() throws SQLException, ClassNotFoundException, IOException
     {
         
-        
-                            // Registramos el driver
-                            Class.forName("oracle.jdbc.OracleDriver");
-
-                            // Parametros de conexion
-                            String dbURL = "jdbc:oracle:thin:@localhost:49161:xe";
-                            String user  = "system";
-                            String pass  = "oracle";
-
-                            // Objeto de conexion
-                            Connection conn = null;
+            // Traemos el socket de conexion y creamos la declaracion para hacer consultas
+            Connection conn = connection();
+            Statement stmt = conn.createStatement();
         
       
             System.out.println("Introduzca el codigo de actor que desea eliminar");
@@ -278,15 +254,7 @@ public class PROG10 {
                         }
                         if(res.equals("S")){
                             //borramos el registro
-                     
 
-                            // Socket de Conexion para BD
-                            conn = DriverManager.getConnection(dbURL, user, pass);
-
-                            // Costruimos el objeto con las preguntas como valores a los atributos y lo añadimos a la lista
-                            Statement stmt = conn.createStatement();
-
-                            // Resulset ejecuta la query
 
                             ResultSet rset = stmt.executeQuery("DELETE FROM APEX_040000.ACTORES\n" +
                             "WHERE CODIGO_ACTOR='"+ ni + "'");
@@ -302,84 +270,58 @@ public class PROG10 {
     
     static void addActor() throws IOException, Exception
     {
-      
-       String decision = null;
-       boolean menu = true;
+            // Traemos el socket de conexion y creamos la declaracion para hacer consultas
+            Connection conn = connection();
+            Statement stmt = conn.createStatement();
+            
+            // Cosas del menu
+            String decision = null;
+            boolean menu = true;
           
           while (menu)
           { 
            System.out.println(" --- Añadir Actores  --- ");
                     try 
                     {
-  
-
                     System.out.print("Añade el nombre --> ");
-
                     String nombre = dato.readLine();
-        
-                    System.out.println("");
+
 
                     System.out.print("Añade el Apellido --> ");
-
                     String apellido = dato.readLine();
                     
-                    System.out.println("");
                     
                     System.out.print("Añade la fecha de nacimiento --> ");
-
                     String fechaNacimiento = dato.readLine();
                     
-                    System.out.println("");
-
                     
                     System.out.print("Añade los premios --> ");
-
                     String premio = dato.readLine();
                     
-                    System.out.println("");
-                    
+
                     System.out.print("Añade el salario --> ");
-                    
                     float salario = Integer.parseInt(dato.readLine());
                     
-                    System.out.println("");
                     
                     System.out.print("Añade un ID --> ");
-
                     int codigo_actor = Integer.parseInt(dato.readLine());
-                    
-                    System.out.println("");
+
                    
                    
 
                             if((nombre.isEmpty()) || (apellido.isEmpty()) || (fechaNacimiento.isEmpty()) || (premio.isEmpty()) || (premio.isEmpty()) || (salario <= 0) || (codigo_actor <= 0)) //controlamos que no haya datos en nulos
                             {
-                             throw new NumberFormatException("Ningun dato puede ser nulo o negativo, vuelve a intentarlo");
+                             throw new Exception("Ningun dato puede ser nulo o negativo, vuelve a intentarlo");
+                             
                             }
                             else
                             {
 
-                            // Registramos el driver
-                            Class.forName("oracle.jdbc.OracleDriver");
-
-                            // Parametros de conexion
-                            String dbURL = "jdbc:oracle:thin:@localhost:49161:xe";
-                            String user  = "system";
-                            String pass  = "oracle";
-
-                            // Objeto de conexion
-                            Connection conn = null;
-
-                            // Socket de Conexion para BD
-                            conn = DriverManager.getConnection(dbURL, user, pass);
-
-                            // Costruimos el objeto con las preguntas como valores a los atributos y lo añadimos a la lista
-                            Statement stmt = conn.createStatement();
-
-                            // Resulset guarda el resultado de la consulta a la tabla de BD
+                            // Declaramos la consulta
                             String query =  "INSERT INTO APEX_040000.ACTORES (nombre, apellido, f_nacimiento, premios, salario, codigo_actor )" 
                             + "VALUES ('" +nombre+ "', '" +apellido+ "', '" +fechaNacimiento+ "', ' " +premio+ "', '" +salario+ "', '" +codigo_actor+ "')";
-
+                            
+                            // Ejecutamos la consulta
                             ResultSet rset = stmt.executeQuery(query);
 
                             stmt.close();      
@@ -411,7 +353,7 @@ public class PROG10 {
                     {
                     System.err.println("Dato invalido");
                     }
-                    catch(NumberFormatException err)
+                    catch(Exception err)
                     {
                     System.err.println(err.getMessage());
                     }
@@ -427,55 +369,33 @@ public class PROG10 {
     
     
     public static void main(String[] args) throws Exception {
-        
-     
-        Connection conn = null;
+
+    // Traemos el socket de conexion y creamos la declaracion para hacer consultas
+    Connection conn = connection();
  
         try {
 
-            // Registramos el driver
-            Class.forName("oracle.jdbc.OracleDriver");
+                
             
-            // Parametros de conexion
-            String dbURL = "jdbc:oracle:thin:@localhost:49161:xe";
-            String user = "system";
-            String pass = "oracle";
-            
-            // Socket de Conexion para BD
-            conn = DriverManager.getConnection(dbURL, user, pass);
+            Statement stmt = conn.createStatement();
             
             if (conn != null) 
             {
                 System.out.println("Connected to DB \n");
-               
-               // Statement ejecuta sentencias SQL y devuelve el resultado.
-               Statement stmt = conn.createStatement();
-               
+                
                // Resulset guarda el resultado de la consulta a la tabla de BD
                ResultSet rset = stmt.executeQuery("select BANNER from SYS.V_$VERSION");
                
-                 
-               
-               //Mostramos por pantalla el ResultSet
-               
+               //Mostramos por pantalla el ResultSet     
                 System.out.println("SQL Server info:\n");
-               while (rset.next())
-               System.out.println (rset.getString(1));   // Print col 1
-                
-               stmt.close();
-               
-                   mostrarMenu();
+                while (rset.next()){
+                System.out.println (rset.getString(1));   // Print col 1
+                }
              
-             
-             
+                stmt.close();
+                mostrarMenu();
             }
-            
-       
-      
-        
- 
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

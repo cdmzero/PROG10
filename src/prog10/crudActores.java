@@ -374,19 +374,7 @@ public class crudActores {
     Connection conn = connection();
     Statement stmt = conn.createStatement();
     
-    
-    //Creamos la tabla 
-        
-                String sql = "CREATE TABLE APEX_040000.PRUEBA2 (codigo_actor INTEGER not NULL, nombre VARCHAR(255), apellido VARCHAR(255), f_nacimiento VARCHAR(255), premios VARCHAR(255), salario FLOAT, PRIMARY KEY (codigo_actor))"; 
-
-               try{
-                stmt.executeUpdate(sql);
-                }catch (SQLException ex) {
-                    ex.printStackTrace();
-                   System.out.println("Tabla ya creada");
-        }
-    
-    
+ 
         try {
 
                 
@@ -409,6 +397,20 @@ public class crudActores {
                 while (rset.next()){
                 System.out.println (rset.getString(1));   // Print col 1
                 }
+                
+                   
+    //Creamos la tabla 
+        
+                String sql = "CREATE TABLE APEX_040000.ACTORES (codigo_actor INTEGER not NULL, nombre VARCHAR(255), apellido VARCHAR(255), f_nacimiento VARCHAR(255), premios VARCHAR(255), salario FLOAT, PRIMARY KEY (codigo_actor))"; 
+
+               try{
+                stmt.executeUpdate(sql);
+                }catch (SQLException ex) {
+             
+                   System.out.println("\n Tabla ACTORES creada \n");
+        }
+    
+    
              
                 stmt.close();
                 mostrarMenu();

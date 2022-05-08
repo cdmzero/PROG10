@@ -372,19 +372,37 @@ public class crudActores {
 
     // Traemos el socket de conexion y creamos la declaracion para hacer consultas
     Connection conn = connection();
- 
+    Statement stmt = conn.createStatement();
+    
+    
+    //Creamos la tabla 
+        
+                String sql = "CREATE TABLE APEX_040000.PRUEBA2 (codigo_actor INTEGER not NULL, nombre VARCHAR(255), apellido VARCHAR(255), f_nacimiento VARCHAR(255), premios VARCHAR(255), salario FLOAT, PRIMARY KEY (codigo_actor))"; 
+
+               try{
+                stmt.executeUpdate(sql);
+                }catch (SQLException ex) {
+                    ex.printStackTrace();
+                   System.out.println("Tabla ya creada");
+        }
+    
+    
         try {
 
                 
             
-            Statement stmt = conn.createStatement();
+           
             
             if (conn != null) 
             {
-                System.out.println("Connected to DB \n");
                 
+               
+                System.out.println("Connected to DB \n");
+            
+         
                // Resulset guarda el resultado de la consulta a la tabla de BD
                ResultSet rset = stmt.executeQuery("select BANNER from SYS.V_$VERSION");
+               
                
                //Mostramos por pantalla el ResultSet     
                 System.out.println("SQL Server info:\n");
